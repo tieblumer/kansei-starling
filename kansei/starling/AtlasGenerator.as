@@ -26,7 +26,7 @@ package kansei.starling
 		 * 
 		 * atlas.addObjectWithWidth(button, 300) // adds a flash simpleButton instance to the list, and prepare to draw it with 300px width and the correspondent height in order to maintin aspect ratio.
 		 * 
-		 * atlas.addObjectWithWidth(bitmap, stage.stageWidth, stage.stageHeight) // adds a flash bitmap instance to the list, and prepare to draw it with the stage's dimensions. Aspect ratio is not maintained.
+		 * atlas.addObjectWithSize(bitmap, stage.stageWidth, stage.stageHeight) // adds a flash bitmap instance to the list, and prepare to draw it with the stage's dimensions. Aspect ratio is not maintained.
 		 * 
 		 * atlas.addObject(bitmapData).name = "myImage" // adds a bitmapData to the list. As bitmapDatas don't have a name property you should set one before generating the atlas, in order to retrieve it later.
 		 * 
