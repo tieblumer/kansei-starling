@@ -50,6 +50,29 @@ package kansei.starling
 		 * 
 		 */
 		
+		 
+		/*
+		Use this code to visualize the generated BitmapData stretched into screen size.
+		 
+		atlas.generate()
+				
+		var b : Bitmap=  new Bitmap(atlas.bmp) 
+		addChild(b);
+		b.width = stage.stageWidth
+		b.scaleY = b.scaleX
+		b.smoothing = true
+		
+		// use the following code to highlight the assets areas.
+		
+		var s : Shape = new Shape()
+		s.graphics.beginFill(0xff0000, .4)
+		for (var loop = 0; loop < atlas.xml.SubTexture.length(); loop++)
+		{
+			var t : XML = atlas.xml.SubTexture[loop]
+			s.graphics.drawRect( parseInt(t.@x.toString()), parseInt(t.@y.toString()), parseInt(t.@width.toString()), parseInt(t.@height.toString()) )
+		}
+		atlas.bmp.draw( s );
+		*/
 		
 		
 		/** La lista de objetos a ser pintados en el nuevo atlas */
