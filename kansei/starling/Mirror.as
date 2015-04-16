@@ -26,9 +26,11 @@ package kansei.starling
 		
 		public var bmp 		: BitmapData
 		public var clone 	: BitmapData
-		public var object 	: DisplayObject
+		public var reference 	: DisplayObject
 		public var matrix	: Matrix
 		public var scale	: Number
+		
+		
 		
 		private var dispatcher : Object
 		private var updateEventType : String
@@ -45,7 +47,7 @@ package kansei.starling
 		 */
 		public function Mirror(object:DisplayObject, area:Object=null, scale:Number=1, transparent:Boolean = true) 
 		{
-			this.object = object;
+			this.reference = object;
 			area = area || object
 			this.scale = scale;
 			
@@ -69,7 +71,7 @@ package kansei.starling
 		 */
 		public function updateOnEvent(eventType:String="change", dispatcher:Object = null):void
 		{
-			dispatcher = dispatcher || object;
+			dispatcher = dispatcher || reference;
 			dispatcher.addEventListener(eventType, update)
 			
 			updateEventType = eventType
@@ -96,7 +98,7 @@ package kansei.starling
 			bmp.copyChannel( clone, clone.rect, nullPoint, 1, 4)
 			bmp.copyChannel( clone, clone.rect, nullPoint, 1, 8)
 			
-			bmp.draw( object, matrix )
+			bmp.draw( reference, matrix )
 			TextureUpdater.update(texture, bmp)
 		}
 		
