@@ -11,6 +11,47 @@ package kansei.starling
 	 */
 	public class AtlasGenerator 
 	{
+		/**
+		 * HOW TO USE IT
+		 * 
+		 * var atlas : AtlasGenerator = new AtlasGenerator()
+		 * 
+		 * 
+		 * 
+		 * // Add any objects you want to the list.
+		 * 
+		 * atlas.addObject(sprite) // adds a flash sprite instance to the list
+		 * 
+		 * atlas.addObject(shape, 2) // adds a flash shape instance to the list and prepare to draw it with twice it's size
+		 * 
+		 * atlas.addObjectWithWidth(button, 300) // adds a flash simpleButton instance to the list, and prepare to draw it with 300px width and the correspondent height in order to maintin aspect ratio.
+		 * 
+		 * atlas.addObjectWithWidth(bitmap, stage.stageWidth, stage.stageHeight) // adds a flash bitmap instance to the list, and prepare to draw it with the stage's dimensions. Aspect ratio is not maintained.
+		 * 
+		 * atlas.addObject(bitmapData).name = "myImage" // adds a bitmapData to the list. As bitmapDatas don't have a name property you should set one before generating the atlas, in order to retrieve it later.
+		 * 
+		 * 
+		 * 
+		 * // when starling is ready you can generate the TextureAtlas
+		 * 
+		 * atlas.generate()
+		 * 
+		 * 
+		 * // then you're able to retrieve your assets by name.
+		 * 
+		 * 
+		 * var image1 : Image = atlas.getImage("myImage") // get an starling Image reflecting the bitmapData provided before
+		 *
+		 * var image2 : Image = atlas.getImage("mySprite", 0, 0) // by default pivots X and Y are centered in the image, but you can easily change it. In this example the pivot is aligned with image's top left corner
+		 * 
+		 * var image3 : Image = atlas.getImage("myBitmap", 0, 0, 100, 200) // as a handy shortcut you can also set x and y position through this function.
+		 * 
+		 * var texture1 : Texture = atlas.getTexture("myButton") // You can retrieve only a Texture if you want. 
+		 * 
+		 */
+		
+		
+		
 		/** La lista de objetos a ser pintados en el nuevo atlas */
 		public var objects : Array
 		

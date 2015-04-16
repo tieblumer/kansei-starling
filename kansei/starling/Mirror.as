@@ -15,6 +15,15 @@ package kansei.starling
 	public class Mirror extends Image 
 	{
 		
+		/**
+		 * HOW TO USE IT
+		 * 
+		 * var mirror : Mirror = new Mirror( myFlashTextField ) // creates a Mirror instance, that is basically an Image extension. Pass the flash object you want to reflect.
+		 *
+		 * mirror.updateOnEvent("textInput") // adds a listener to the flash object. Every time it dispatches this event the texture will be updated.  
+		 * 
+		 */
+		
 		public var bmp 		: BitmapData
 		public var clone 	: BitmapData
 		public var object 	: DisplayObject
