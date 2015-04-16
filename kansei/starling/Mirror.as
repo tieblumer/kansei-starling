@@ -21,12 +21,18 @@ package kansei.starling
 		public var matrix	: Matrix
 		public var scale	: Number
 		
+		private var dispatcher : Object
+		private var updateEventType : String
+		
+		private var nullPoint : Point = new Point
+
+		
 		/**
-		 * 
+		 * Used to create an image that reflects any flash.DispayObject and keep it updated.
 		 * @param	object The object to be draw into the Texture
 		 * @param	area any an optional alternative reference for the size of the Texture. It can be any object containing width and height properties.
-		 * @param	scale A factor used to modify the size of the texture. The greater the scale the greater the texture. This is intented to keep the draw at maximum quality when drawing flash vectors into the bitmapData. 
-		 * @param	transparent  A Boolean indicating the 
+		 * @param	scale A factor used to modify the size of the texture. The greater the scale the greater the texture. This is intended to keep the draw at maximum quality when drawing flash vectors into the bitmapData. 
+		 * @param	transparent  A Boolean indicating if the bitmapData use to the texture is transparent or not.
 		 */
 		public function Mirror(object:DisplayObject, area:Object=null, scale:Number=1, transparent:Boolean = true) 
 		{
@@ -47,20 +53,33 @@ package kansei.starling
 			
 		}
 		
-		
-		public function updateOnEvent(eventType:String, dispatcher:Object = null):void
+		/**
+		 * Adds an eventListener to the flash object, or to the object indicated as dispatcher, in order to automatically update Texture.
+		 * @param	eventType The type of event dispatched by the flash object
+		 * @param	dispatcher An alternative eventDispatcher to listen to.
+		 */
+		public function updateOnEvent(eventType:String="change", dispatcher:Object = null):void
 		{
 			dispatcher = dispatcher || object;
 			dispatcher.addEventListener(eventType, update)
+			
+			updateEventType = eventType
+			this.dispatcher = dispatcher
 		}
 		
-		public function cancelUpdate(eventType:String, dispatcher:Object = null):void
+		/**
+		 * Removes the last listener created with updateOnEvent 
+		 */
+		public function cancelUpdate():void
 		{
-			dispatcher = dispatcher || object;
-			dispatcher.removeEventListener(eventType, update)
+			dispatcher.removeEventListener(updateEventType, update)
 		}
 		
-		private var nullPoint : Point = new Point
+		
+		/**
+		 * Draw the flashObject to the texture
+		 * @param	...e Just accepts anything like an event or nothing at all.
+		 */
 		public function update(...e)
 		{
 			bmp.copyChannel( clone, clone.rect, nullPoint, 1, 1)
@@ -71,6 +90,10 @@ package kansei.starling
 			bmp.draw( object, matrix )
 			TextureUpdater.update(texture, bmp)
 		}
+		
+		/**
+		 * Manually updates the drawing matrix if you decide to change any parameter like object or BitmapData after the instance was created.
+		 */
 		public function updateMatrix():void
 		{
 			matrix.identity();

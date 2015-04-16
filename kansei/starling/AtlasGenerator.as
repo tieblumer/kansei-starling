@@ -7,8 +7,7 @@ package kansei.starling
 	import starling.textures.Texture;
 	import starling.textures.TextureAtlas;
 	/**
-	 * ...
-	 * @author Un isleño
+	 * @author Tie Blumer
 	 */
 	public class AtlasGenerator 
 	{
@@ -21,7 +20,7 @@ package kansei.starling
 		/** Una lista de los objetos ya posicionados*/
 		private var placedObjects : Array
 		
-		/** Un segundo atlas para pintar los objetos que nohan entrado en ese atlas. */
+		/** Un segundo atlas para pintar los objetos que no han entrado en ese atlas. */
 		private var nextAtlas 		: AtlasGenerator
 		
 		/** Un atlas alternativo utilizando el algoritmo "y" en lugar del atlas */
@@ -29,34 +28,36 @@ package kansei.starling
 		
 		public var margin : int = 2
 		
-		public var width  		: int = 0
-		public var height 		: int = 0
-		public var algorithm 	: String = "x"
-		public var isUsed 		: Boolean = false
+		private var width  		: int = 0
+		private var height 		: int = 0
+		private var algorithm 	: String = "x"
+		private var isUsed 		: Boolean = false
 		
 		public var atlas : TextureAtlas
 		public var bmp : BitmapData
 		public var xml : XML
 		
-		public var collection : Array
+		private var collection : Array
 		
 		/**
-		 * Genera un nuevo atlas
-		 * @param	size
-		 * @param	algorithm
+		 * Creates a new Atlas Generator. Add objects to it using one of the addObject method. Call generate method after starling is initialized. Retrieve an asset using getImage or getTexture methods.
+		 * @param	size The size of the Atlas BitmapData. If any image results to be bigger then this number a complementary BitmapData will be created. All of the available algorithms are tested in each BitmapData and that will determine if "size" represents the width or the height of each generated BitmapData. 
+		 * @param	margin The minimum distance between any object and other objects or the BitmapData borders.
 		 */
-		public function AtlasGenerator(size:int, algorithm:String="x") 
+		public function AtlasGenerator(size:int=1024, margin:int = 2) 
 		{
 			objects = [];
 			points = [];
 			placedObjects = [];
 			collection = []
 			
-			this.algorithm = algorithm;
+			this.margin = Math.max(1, Math.abs(margin));
+			
+			this.algorithm = margin<0 ? "y" : "x";
 			if (algorithm === "x") 
 			{
 				width = size;
-				brother = new AtlasGenerator(size, "y")
+				brother = new AtlasGenerator(size, -this.margin)
 			}
 			else 
 			{
@@ -66,32 +67,67 @@ package kansei.starling
 		}
 		
 		/**
-		 * Añade un objeto a la lista de objetos a ser diseñados en el nuevo atlas.
-		 * @param	object El objeto a ser dibujado en el atlas
-		 * @param	scale Escala las dimensiones del objeto. Es ignorado si se pasa width y/ o height.
-		 * @param	width Define el ancho del objeto. Si height es 0 ajusta el alto proporcionalmente.
-		 * @param	height Define el alto del objeto. Si width es 0 ajusta el ancho proporcionalmente.
+		 * Adds an object to be implemented to the TextureAtlas and scales it. The provided object must be compatible with BitmapData.draw method. If the object has no name you should provide one to the returned object.
+		 * @param	object The object to be implemented to the TextureAtlas. It  must be compatible with BitmapData.draw method.
+		 * @param	scale A number representing the scale factor to use when drawing the object to the atlas.
+		 * @return returns an object with the info added to AtlasGenerator. 
 		 */
-		public function addObject( object:Object, scale:Number = 1, width : Number = 0, height:Number = 0 ):void
+		public function addObject( object:Object, scale:Number=1 ):Object
 		{
-			
-			if (width || height)
-			{
-				if (!width) return addObject( object, height/object.height)
-				if (!height) return addObject( object, width/object.width)
-				
-				objects.push( { object:object, width:width, height:height, scale:width/object.width } )
-				return
-			}
-			objects.push({
+			return _addObject( object, scale, scale )
+		}
+		
+		/**
+		 * Adds an object to be implemented to the TextureAtlas and scales it to reach the desired width maintaining its proportions. The provided object must be compatible with BitmapData.draw method. If the object has no name you should provide one to the returned object.
+		 * @param	object The object to be implemented to the TextureAtlas. It  must be compatible with BitmapData.draw method.
+		 * @param	width An integer indicating the width of the object at the atlas. Height will be automatically adjusted to maintain the original proportion.
+		 * @return returns an object with the info added to AtlasGenerator. 
+		 */
+		public function addObjectWithWidth( object:Object, width:uint):Object
+		{
+			return _addObject( object, width/object.width, width/object.width)
+		}		
+		
+		/**
+		 * Adds an object to be implemented to the TextureAtlas and scales it to reach the desired height maintaining its proportions. The provided object must be compatible with BitmapData.draw method. If the object has no name you should provide one to the returned object.
+		 * @param	object The object to be implemented to the TextureAtlas. It  must be compatible with BitmapData.draw method.
+		 * @param	height An integer indicating the height of the object at the atlas. Width will be automatically adjusted to maintain the original proportion.
+		 * @return returns an object with the info added to AtlasGenerator. 
+		 */
+		 public function addObjectWithHeight( object:Object, height:uint):Object
+		{
+			return _addObject( object, height/object.height, height/object.height)
+		}
+		
+		/**
+		 * Adds an object to be implemented to the TextureAtlas and scales it to reach the desired width and the desired height. Proportion may be not the same of the original object. The provided object must be compatible with BitmapData.draw method. If the object has no name you should provide one to the returned object.
+		 * @param	object The object to be implemented to the TextureAtlas. It  must be compatible with BitmapData.draw method.
+		 * @param	height An integer indicating the width of the object at the atlas. Height will be automatically adjusted.
+		 * @return returns an object with the info added to AtlasGenerator. 
+		 */
+		public function addObjectWithSize( object:Object, width:uint, height:uint):Object
+		{
+			return _addObject( object, width/object.width, width/object.width)
+		}
+		
+
+		private function _addObject(object:Object, scaleX:Number, scaleY:Number):Object
+		{
+			var result : Object = {
 							image:	object, 
-							name:	object.name,
-							scale: scale,
-							width:	Math.ceil(object.width  * scale), 
-							height:	Math.ceil(object.height * scale)
-						})	
-						
-			if (brother) brother.addObject(object, scale, width, height);
+							name:	object.hasOwnProperty("name") ? object.name : "",
+							scaleX: scaleX,
+							scaleY: scaleY,
+							width:	Math.ceil(object.width  * scaleX), 
+							height:	Math.ceil(object.height * scaleY)
+						}
+			_addResult(result)
+			if (brother)  brother._addResult(result)
+			return result
+		}
+		private function _addResult(result:Object):void
+		{
+			objects.push( result )
 		}
 		
 		public function get lastObject():Object
@@ -99,7 +135,7 @@ package kansei.starling
 			return objects[ objects.length -1 ];
 		}
 		
-		/** inicia la creación del atlas y del xml */
+		/** Converts all the objects into TextureAtlas. After that you can retrieve assets using getImage and getTexture methods. */
 		public function generate():void
 		{
 			_generate()
@@ -177,7 +213,7 @@ package kansei.starling
 			if (object.width > width )
 			{
 				if (!nextAtlas) nextAtlas = new AtlasGenerator(width*2)
-				nextAtlas.addObject( object.image, 1, object.width, object.height )
+				nextAtlas._addObject( object.image, object.scaleX, object.scaleY).name = object.name
 			}
 			
 			points.sortOn("y", Array.NUMERIC)
@@ -201,7 +237,7 @@ package kansei.starling
 			if (object.height > height )
 			{
 				if (!nextAtlas) nextAtlas = new AtlasGenerator( height * 2);
-				nextAtlas.addObject( object.image, 1, object.width, object.height )
+				nextAtlas._addObject( object.image, object.scaleX, object.scaleY).name = object.name
 			}
 			
 			points.sortOn("x", Array.NUMERIC)
@@ -312,6 +348,11 @@ package kansei.starling
 			return mySize
 		}
 		
+		/**
+		 * Retrieve a Texture from the TextureAtlas by name.
+		 * @param	name The name of the desired texture
+		 * @return
+		 */
 		public function getTexture(name:String):Texture
 		{
 			for (var loop in collection)
@@ -322,6 +363,15 @@ package kansei.starling
 			return null;
 		}
 		
+		/**
+		 * Retrieve an Image from the TextureAtlas.
+		 * @param	name The name of the asset.
+		 * @param	pivotX Any number indicating the pivot horizontal position. 0 would be left, .5 center and 1 would be right. Smaller or bigger numbers are also accepted.
+		 * @param	pivotY Any number indicating the pivot vertical position. 0 would be top, .5 center and 1 would be bottom. Smaller or bigger numbers are also accepted.
+		 * @param	x An optional shortcut to define image.x
+		 * @param	y An optional shortcut to define image.y
+		 * @return
+		 */
 		public function getImage(name:String, pivotX:Number = .5, pivotY:Number = .5, x:Number = 0, y:Number = 0):Image
 		{	
 			var image : Image = new Image( getTexture(name) )
