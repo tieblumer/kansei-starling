@@ -49,7 +49,7 @@ package kansei.starling
 		public function Mirror(reference:IBitmapDrawable, area:Object=null, scale:Number=1, transparent:Boolean = true) 
 		{
 			this.reference = reference;
-			area = area || object
+			area = area || reference
 			this.scale = scale;
 			
 			matrix = new Matrix();
@@ -58,7 +58,7 @@ package kansei.starling
 			bmp = new BitmapData( area.width*scale, area.height*scale, transparent, 0 )
 			clone = bmp.clone()
 			
-			bmp.draw( object )
+			bmp.draw( reference )
 			
 			super( Texture.fromBitmapData(bmp) );
 			
@@ -99,7 +99,7 @@ package kansei.starling
 			bmp.copyChannel( clone, clone.rect, nullPoint, 1, 4)
 			bmp.copyChannel( clone, clone.rect, nullPoint, 1, 8)
 			
-			bmp.draw( reference, matrix )
+			bmp.draw( reference as IBitmapDrawable, matrix )
 			TextureUpdater.update(texture, bmp)
 		}
 		
