@@ -7,7 +7,9 @@ package kansei.starling
 	import flash.geom.Point;
 	import kansei.starling.TextureUpdater;
 	import starling.display.Image;
+	import starling.textures.RenderTexture;
 	import starling.textures.Texture;
+	import starling.textures.TextureSmoothing;
 	
 	/**
 	 * ...
@@ -37,6 +39,7 @@ package kansei.starling
 		private var updateEventType : String
 		
 		private var nullPoint : Point = new Point
+		
 
 		
 		/**
@@ -46,7 +49,7 @@ package kansei.starling
 		 * @param	scale A factor used to modify the size of the texture. The greater the scale the greater the texture. This is intended to keep the draw at maximum quality when drawing flash vectors into the bitmapData. 
 		 * @param	transparent  A Boolean indicating if the bitmapData use to the texture is transparent or not.
 		 */
-		public function Mirror(reference:IBitmapDrawable, area:Object=null, scale:Number=1, transparent:Boolean = true) 
+		public function Mirror(reference:IBitmapDrawable, area:Object=null, scale:Number=1, transparent:Boolean = true, mipMapping:Boolean = false) 
 		{
 			this.reference = reference;
 			area = area || reference
@@ -60,7 +63,8 @@ package kansei.starling
 			
 			bmp.draw( reference )
 			
-			super( Texture.fromBitmapData(bmp) );
+			super( Texture.fromBitmapData(bmp, mipMapping, true) );
+			
 			
 			
 		}
@@ -111,6 +115,8 @@ package kansei.starling
 			matrix.identity();
 			matrix.scale(scale, scale)
 		}
+		
+		
 		
 	}
 

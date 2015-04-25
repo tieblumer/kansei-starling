@@ -279,17 +279,25 @@ package kansei.starling
 				if (!nextAtlas) nextAtlas = new AtlasGenerator(width*2)
 				nextAtlas._addObject( object.image, object.scaleX, object.scaleY).name = object.name
 			}
-			
+			//trace("")
 			points.sortOn("y", Array.NUMERIC)
 			//tracePoints()
 			for (var loop in points)
 			{
 				var point = points[loop]
-				//trace("check point "+loop, point.x, point.y)
-				if ( fitsInPageX(object, point) && 	!hitTest(object, point) )
+				//trace("check point"+loop, point.x, point.y)
+				if ( fitsInPageX(object, point) )
 				{
 					//trace("ok")
-					return placeObject( object, point );
+					if (!hitTest(object, point))
+					{
+						//trace("\t\t\t>>>>>>>>>>>>>>>>>>>")
+						return placeObject( object, point );
+					}
+				}
+				else
+				{
+					//trace("! fit in page")
 				}
 			}
 			
@@ -328,31 +336,35 @@ package kansei.starling
 			return point.y + object.height + margin < height
 		}
 		
-		private var tempPoint 	: Object = {}
-		private var tempObject 	: Object = {}
+		private var rect1 : Object = {}
+		private var rect2 : Object = {}
+		private var tempObject : Object = {}
+		
 		private function hitTest(object, point)
 		{
-			if (algorithm === "x")
-			{
-				tempPoint.x = Math.round(point.x + object.width + margin);
-				tempPoint.y = Math.round(point.y);
-			}
-			else
-			{
-				tempPoint.x = Math.round(point.x);
-				tempPoint.y = Math.round(point.y + object.height + margin);
-			}
-			//trace("\thitTest x:"+tempPoint.x,"y:"+tempPoint.y)
+			var x1 : Number = point.x 
+			var x2 : Number = point.x + margin + object.width
+			var y1 : Number = point.y
+			var y2 : Number = point.y + margin + object.height
+			
+			//trace("\t"+object.name+" : "+x1+","+y1+" "+x2+","+y2)
 			for (var loop in placedObjects)
 			{
 				tempObject = placedObjects[loop];
-				//trace("\t\t",tempObject.name,"x:"+tempObject.x,"y:"+tempObject.y, "r:"+tempObject.right,"b:"+tempObject.bottom)
-				if( tempObject.x <= tempPoint.x && tempObject.right  > tempPoint.x &&
-					tempObject.y <= tempPoint.y && tempObject.bottom > tempPoint.y
-				) {
+				
+				var X1 : Number = tempObject.x 
+				var X2 : Number = tempObject.x + tempObject.width
+				var Y1 : Number = tempObject.y 
+				var Y2 : Number = tempObject.y + tempObject.height
+				
+				
+				//trace("\t\t",tempObject.name+" : "+X1+","+Y1+" : "+X2+","+Y2)
+				if ( ! ( x1 > X2 || x2 < X1 || y1 > Y2 || y2 < Y1) ) 
+				{
 					//trace("\t\t\thit")
 					return true;
 				}
+				
 			}
 			return false;
 			
