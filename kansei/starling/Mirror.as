@@ -61,7 +61,7 @@ package kansei.starling
 			bmp = new BitmapData( area.width*scale, area.height*scale, transparent, 0 )
 			clone = bmp.clone()
 			
-			bmp.draw( reference )
+			bmp.draw( reference, matrix )
 			
 			super( Texture.fromBitmapData(bmp, mipMapping, true) );
 			
@@ -98,10 +98,10 @@ package kansei.starling
 		 */
 		public function update(...e)
 		{
-			bmp.copyChannel( clone, clone.rect, nullPoint, 1, 1)
-			bmp.copyChannel( clone, clone.rect, nullPoint, 1, 2)
-			bmp.copyChannel( clone, clone.rect, nullPoint, 1, 4)
-			bmp.copyChannel( clone, clone.rect, nullPoint, 1, 8)
+			bmp.copyPixels( clone, clone.rect, nullPoint)
+			//bmp.copyChannel( clone, clone.rect, nullPoint, 1, 2)
+			//bmp.copyChannel( clone, clone.rect, nullPoint, 1, 4)
+			//bmp.copyChannel( clone, clone.rect, nullPoint, 1, 8)
 			
 			bmp.draw( reference as IBitmapDrawable, matrix )
 			TextureUpdater.update(texture, bmp)
